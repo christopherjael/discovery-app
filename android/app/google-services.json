@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "16784552282",
+    "project_id": "dicoveryapp",
+    "storage_bucket": "dicoveryapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:16784552282:android:8e056cf6cba954743b8363",
+        "android_client_info": {
+          "package_name": "com.example.discovery_app.discoveryapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "16784552282-bfukvrhv12211nr6m620hco8f42lr9o0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOTgNWudLvNzf5TbwVTPx8mghCA_X3Ulc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "16784552282-bfukvrhv12211nr6m620hco8f42lr9o0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
