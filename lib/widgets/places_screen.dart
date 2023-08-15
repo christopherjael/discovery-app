@@ -52,7 +52,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
               background: Container(
                 alignment: Alignment.centerRight,
                 color: Colors.red,
-                child: Padding(
+                child: const Padding(
                   padding: EdgeInsets.only(right: 16),
                   child: Icon(Icons.delete, color: Colors.white),
                 ),
@@ -61,8 +61,8 @@ class _PlacesScreenState extends State<PlacesScreen> {
                 _removeLocation(location);
               },
               child: ListTile(
-                title: Text(location.title),
-                subtitle: Text(location.description),
+                title: Text('Titulo: ${location.title}'),
+                subtitle: Text('Descripcion: ${location.description}\nCategoria: ${location.category}'),
                 onTap: () {
                   Navigator.push(
                     context,

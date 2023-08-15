@@ -107,10 +107,10 @@ class _MapScreenState extends State<MapScreen> {
                   markerId: MarkerId(location.coordinates.toString()),
                   position: location.coordinates,
                   infoWindow: InfoWindow(
-                    title: location.title,
+                    title: '${location.category}: ${location.title}',
                     snippet: location.description,
                   ),
-                  icon: //BitmapDescriptor.fromAssetImage(const ImageConfiguration(), 'assets/img/star.png').then((value) => value);
+                  //icon: BitmapDescriptor.fromAssetImage(const ImageConfiguration(), 'assets/img/star.png').then((value) => value);
                 );
               }).toSet(),
             ),
