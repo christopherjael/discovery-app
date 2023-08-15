@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/location_info.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -14,9 +16,10 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  Location _location = Location();
+  final Location _location = Location();
+  List<LocationInfo> _locations = [];
 
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   final Completer<GoogleMapController> _controller =
   Completer<GoogleMapController>();
@@ -26,11 +29,38 @@ class _MapScreenState extends State<MapScreen> {
     zoom: 12.0,
   );
 
-  static const CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
+  Future<void> _loadLocations() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedLocations = prefs.getStringList('locations') ?? [];
+
+    setState(() {
+      _locations = savedLocations.map((locationString) {
+        final parts = locationString.split(';');
+        return LocationInfo(
+          coordinates: LatLng(double.parse(parts[0]), double.parse(parts[1])),
+          title: parts[2],
+          description: parts[3],
+          category: parts[4],
+        );
+      }).toList();
+    });
+  }
+
+  Future<void> _saveLocations() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    final locationsToSave = _locations
+        .map((location) =>
+    '${location.coordinates.latitude};${location.coordinates.longitude};${location.title};${location.description};${location.category}')
+        .toList();
+    await prefs.setStringList('locations', locationsToSave);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLocations();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,8 +95,24 @@ class _MapScreenState extends State<MapScreen> {
               mapType: MapType.normal,
               initialCameraPosition: _kGooglePlex,
               onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
+                setState(() {
+                  _controller.complete(controller);
+                });
               },
+              onLongPress: (LatLng latLng) {
+                _showLocationDialog(latLng);
+              },
+              markers: _locations.map((location) {
+                return Marker(
+                  markerId: MarkerId(location.coordinates.toString()),
+                  position: location.coordinates,
+                  infoWindow: InfoWindow(
+                    title: location.title,
+                    snippet: location.description,
+                  ),
+                  icon: //BitmapDescriptor.fromAssetImage(const ImageConfiguration(), 'assets/img/star.png').then((value) => value);
+                );
+              }).toSet(),
             ),
           ),
         ],
@@ -77,6 +123,84 @@ class _MapScreenState extends State<MapScreen> {
         backgroundColor: Colors.white,
       ),
     );
+  }
+
+  void _showLocationDialog(LatLng latLng) async {
+    TextEditingController titleController = TextEditingController();
+    TextEditingController descriptionController = TextEditingController();
+    String _selectedCategory = 'Hotel'; // Valor predeterminado
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Agregar Información de Ubicación'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: titleController,
+                  decoration: InputDecoration(labelText: 'Título'),
+                ),
+                TextField(
+                  controller: descriptionController,
+                  decoration: InputDecoration(labelText: 'Descripción'),
+                ),
+                DropdownButtonFormField<String>(
+                  isExpanded: true,
+                  hint: Text(
+                    _selectedCategory,
+                  ),
+                  onSaved: (newValue) {
+                    setState(() {
+                      _selectedCategory = newValue!;
+                    });
+                  },
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedCategory = newValue!;
+                    });
+                  },
+                  items: ['Hotel', 'Restaurante', 'Parque', 'Museo'] // Agrega más categorías si es necesario
+                      .map<DropdownMenuItem<String>>((String category) {
+                    return DropdownMenuItem<String>(
+                      value: category,
+                      child: Text(category),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _locations.add(
+                      LocationInfo(
+                        coordinates: latLng,
+                        title: titleController.text,
+                        description: descriptionController.text,
+                        category: _selectedCategory
+                      ),
+                    );
+                  });
+                  Navigator.of(context).pop();
+                },
+                child: Text('Agregar'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Cancelar'),
+              ),
+            ],
+          );
+        },
+    );
+
+    await _saveLocations();
+
+    //Navigator.of(context).pop();
   }
 
   void _getCurrentLocation() async {
@@ -108,28 +232,6 @@ class _MapScreenState extends State<MapScreen> {
     final GoogleMapController controller = await _controller.future;
     await controller.animateCamera(
       CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(locationData.latitude!,locationData.longitude!), zoom: 20.0)),
-    );
-  }
-
-  Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    await controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
-  }
-  Future<void> _goToPlace(
-      // Map<String, dynamic> place,
-      double lat,
-      double lng,
-      Map<String, dynamic> boundsNe,
-      Map<String, dynamic> boundsSw,
-      ) async {
-    // final double lat = place['geometry']['location']['lat'];
-    // final double lng = place['geometry']['location']['lng'];
-
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(target: LatLng(lat, lng), zoom: 12),
-      ),
     );
   }
 
