@@ -18,10 +18,6 @@ class _HomeState extends State<Home> {
   static List<Widget> _widgetOptions = <Widget>[
     MapScreen(),
     PlacesScreen(),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
   ];
 
   void _onItemTapped(int index) {
@@ -55,10 +51,6 @@ class _HomeState extends State<Home> {
             BottomNavigationBarItem(
               icon: Icon(Icons.place),
               label: 'Lugares',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.account_box),
-              label: 'Cuenta',
             ),
           ],
           currentIndex: _selectedIndex,

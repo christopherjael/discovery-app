@@ -1,5 +1,6 @@
 //import 'dart:html';
 
+import 'package:discoveryapp/widgets/places_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,9 @@ import 'package:discoveryapp/components/square_tile.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({super.key, this.onTap});
+
   final Function()? onTap;
+
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -21,32 +24,48 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
 
   void wrongEmaillMessage() {
-    showDialog(context: context, builder: (context) {
-      return AlertDialog(title: Text('Email incorrecto'));
-    });
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(title: Text('Email incorrecto'));
+        });
   }
 
   void WrongPasswordMessage() {
-    showDialog(context: context, builder: (context) {
-      return AlertDialog(title: Text('Contraseña incorrecta'));
-    });
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(title: Text('Contraseña incorrecta'));
+        });
+  }
+
+  void _goToPlacesScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlacesScreen(),
+      ),
+    );
   }
 
   // sign user in method
-  void signUserIn() async{
-    showDialog(context: context, builder: (context) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    });
-    try{
-      await FirebaseAuth.instance.signInWithEmailAndPassword(email: emailController.text, password: passwordController.text);
+  void signUserIn() async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        });
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailController.text, password: passwordController.text);
       Navigator.pop(context);
-    } on FirebaseAuthException catch (e){
+    } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
-      if(e.code == 'user-not-found'){
+      if (e.code == 'user-not-found') {
         wrongEmaillMessage();
-      }else if (e.code == 'wrong-password'){
+      } else if (e.code == 'wrong-password') {
         WrongPasswordMessage();
       }
     }
@@ -156,11 +175,12 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 25),
 
                 // google + apple sign in buttons
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // google button
-                    SquareTile(imagePath: 'resources/img/google.png'),
+                    MyButton(
+                        onTap: _goToPlacesScreen, text: 'Ver lugares Offline')
                   ],
                 ),
 
@@ -194,6 +214,4 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
-
 }
