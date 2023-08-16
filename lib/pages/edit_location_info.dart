@@ -69,6 +69,12 @@ class _EditLocationScreenState extends State<EditLocationScreen> {
                 );
               }).toList(),
             ),
+            SizedBox(height: 16),
+            Text("Latitud: ${widget.location.coordinates.latitude.toString()}"),
+            SizedBox(height: 16),
+            Text("Longitud: ${widget.location.coordinates.longitude.toString()}"),
+            SizedBox(height: 16),
+            SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 // Guardar la ubicación editada y actualizar en SharedPreferences

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,9 +40,19 @@ class _PlacesScreenState extends State<PlacesScreen> {
     //print(_locations);
   }
 
+  void signUserOut() {
+    FirebaseAuth.instance.signOut();
+  }
+
   @override
   Widget build(BuildContext context) {
       return Scaffold(
+        appBar: AppBar(
+          title: Text('Lugares Guardados'),
+          actions: [
+            IconButton(onPressed: signUserOut, icon: Icon(Icons.logout))
+          ],
+        ),
         body: ListView.builder(
           itemCount: _locations.length,
           itemBuilder: (context, index) {

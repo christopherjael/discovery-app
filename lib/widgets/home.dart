@@ -33,12 +33,12 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
+        /*appBar: AppBar(
           title: Text('DiscoveryApp'),
           actions: [
             IconButton(onPressed: signUserOut, icon: Icon(Icons.logout))
           ],
-        ),
+        ),*/
         body: Center(
           child: _widgetOptions.elementAt(_selectedIndex),
         ),

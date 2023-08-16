@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:discoveryapp/services/location_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -16,6 +17,8 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+
+
   final Location _location = Location();
   List<LocationInfo> _locations = [];
 
@@ -23,6 +26,10 @@ class _MapScreenState extends State<MapScreen> {
 
   final Completer<GoogleMapController> _controller =
   Completer<GoogleMapController>();
+
+  void signUserOut() {
+    FirebaseAuth.instance.signOut();
+  }
 
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(18.48187182164199, -69.91422944296767),
@@ -65,6 +72,12 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+          title: Text('Mapa'),
+          actions: [
+            IconButton(onPressed: signUserOut, icon: Icon(Icons.logout))
+          ],
+        ),
       body: Column(
         children: [
            Row(
